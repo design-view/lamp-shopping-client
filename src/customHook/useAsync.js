@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useCallback } from "react";
+import { useReducer, useEffect } from "react";
 const initialState = {
     loading: false,
     data: null,
@@ -50,6 +50,7 @@ function useAsync(callback, deps=[]){
     }
     useEffect(()=>{
         fetchDate();
+    // eslint-disable-next-line
     }, deps);
     return [state, fetchDate];
 }

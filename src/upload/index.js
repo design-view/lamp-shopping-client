@@ -2,8 +2,12 @@ import React,{ useState } from 'react';
 import { Form, Divider, Input, InputNumber, Button, Upload } from 'antd';
 import 'antd/dist/antd.css';
 import './upload.scss';
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import { API_URL} from '../config/contansts';
 const UploadPage = (props) => {
-    //이미지 경로 상태관리 추가 
+    const navigate = useNavigate();
+   //이미지 경로 상태관리 추가 
     const [ imageUrl, setImageUrl ] = useState(null);
     //이미리 처리함수
     const onChangeImage = (info)=>{
@@ -21,15 +25,32 @@ const UploadPage = (props) => {
         }
         console.log(info.file);
     }
+    const onSubmit = (values) => {
+      //서버로 데이터 전송하기
+      axios.post(`${API_URL}/products`,{
+        name: values.name,
+        seller: values.seller,
+        price: values.price,
+        imageUrl: imageUrl,
+        description:values.description
+      }).then((result)=>{
+        console.log(result)
+        navigate("/");
+      })
+      .catch(e=>{
+        console.log(e);
+      })
+
+    }
     return (
         
         <div id="upload-container" className='inner'>
             
-            <Form name="productUpload">
+            <Form name="productUpload" onFinish={onSubmit}>
                 <Form.Item name="imgUpload"
                     label={<div className='upload-label'>상품사진</div>}
                 >
-                    <Upload name="image" action="http://localhost:3000/image"
+                    <Upload name="image" action={`${API_URL}/image`}
                 listType="picture" showUploadList={false} onChange={onChangeImage}>
 
                     {/* 업로드 이미지가 있으면 이미지를 나타내고 업로드 이미지가 없으면
