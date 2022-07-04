@@ -1,18 +1,48 @@
-import React from 'react';
-import { Form, Divider, Input, InputNumber, Button } from 'antd';
+import React,{ useState } from 'react';
+import { Form, Divider, Input, InputNumber, Button, Upload } from 'antd';
 import 'antd/dist/antd.css';
 import './upload.scss';
 const UploadPage = (props) => {
+    //이미지 경로 상태관리 추가 
+    const [ imageUrl, setImageUrl ] = useState(null);
+    //이미리 처리함수
+    const onChangeImage = (info)=>{
+        
+        //파일이 업로드 중일때
+        if(info.file.status === "uploading"){
+            return;
+        }
+        //파일이 업로드 완료되었을때
+        if(info.file.status === "done"){
+            const response = info.file.response;
+            const imageUrl = response.imageUrl;
+            //받은 이미지경로를 imageUrl에 넣어줌
+            setImageUrl(imageUrl);
+        }
+        console.log(info.file);
+    }
     return (
+        
         <div id="upload-container" className='inner'>
+            
             <Form name="productUpload">
                 <Form.Item name="imgUpload"
                     label={<div className='upload-label'>상품사진</div>}
                 >
-                    <div id="upload-img-placeholder">
+                    <Upload name="image" action="http://localhost:3000/image"
+                listType="picture" showUploadList={false} onChange={onChangeImage}>
+
+                    {/* 업로드 이미지가 있으면 이미지를 나타내고 업로드 이미지가 없으면
+                    회색배경에 업로드 아이콘이 나타나도록... */}
+                    { imageUrl ? <img src={imageUrl} 
+                    alt="" width="200px" height="200px" /> :
+                        (<div id="upload-img-placeholder">
                         <img src="images/icons/camera.png" alt=""/>
                         <span>이미지를 업로드 해주세요.</span>
-                    </div>
+                    </div>)
+                    }
+                        
+                    </Upload>
                 </Form.Item>
                 <Divider/>
                 <Form.Item name="seller" 
